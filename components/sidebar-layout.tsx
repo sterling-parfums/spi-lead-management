@@ -22,7 +22,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 export function SidebarLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -111,7 +111,7 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
         sx={{
           flexGrow: 1,
           p: 3,
-          ml: isMobile ? 0 : `${drawerWidth}px`,
+          ml: 0,
         }}
       >
         <Toolbar />
