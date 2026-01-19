@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Lead" ALTER COLUMN "brands" SET DEFAULT ARRAY[]::TEXT[];
