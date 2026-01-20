@@ -8,6 +8,7 @@ import {
   Chip,
   Divider,
   Grid,
+  Link,
   Stack,
   Typography,
 } from "@mui/material";
@@ -32,7 +33,7 @@ export default function LeadDetail({ lead }: { lead: LeadWithEventAndBrands }) {
 
             {/* Main Info */}
             <Grid container spacing={2}>
-              <Info label="Email" value={lead.email} />
+              <Info label="Email" value={lead.email} type="email" />
               <Info label="Phone" value={lead.phone} />
               <Info label="Country" value={lead.country} />
               <Info label="Event" value={lead.event.name} />
@@ -86,13 +87,24 @@ export default function LeadDetail({ lead }: { lead: LeadWithEventAndBrands }) {
   );
 }
 
-function Info({ label, value }: { label: string; value?: string | null }) {
+function Info({
+  label,
+  value,
+  type,
+}: {
+  label: string;
+  value?: string | null;
+  type?: "email";
+}) {
   return (
     <Grid size={{ xs: 12, sm: 6 }}>
       <Typography variant="caption" color="text.secondary">
         {label}
       </Typography>
-      <Typography>{value || "—"}</Typography>
+      <Box>
+        {type === "email" && <Link href={`mailto:${value}`}>{value}</Link>}
+        {type !== "email" && <Typography>{value || "—"}</Typography>}
+      </Box>
     </Grid>
   );
 }

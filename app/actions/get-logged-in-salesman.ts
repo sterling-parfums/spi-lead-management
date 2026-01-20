@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { Salesman } from "../generated/prisma/client";
+import { redirect } from "next/navigation";
 
 export async function getLoggedInSalesman(): Promise<Salesman | null> {
   const cookieStore = await cookies();
@@ -16,4 +17,13 @@ export async function getLoggedInSalesman(): Promise<Salesman | null> {
   });
 
   return session?.user.salesman ?? null;
+}
+
+export async function getLoggedInSalesmanOrRedirect(): Promise<Salesman> {
+  const salesman = await getLoggedInSalesman();
+  if (!salesman) {
+    redirect("/login");
+  }
+
+  return salesman;
 }
