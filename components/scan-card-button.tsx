@@ -100,7 +100,7 @@ export function ScanBusinessCardButton({ setValue }: Props) {
             Extracting…
           </>
         ) : (
-          "Scan / Upload business card"
+          "Scan business card"
         )}
       </Button>
 

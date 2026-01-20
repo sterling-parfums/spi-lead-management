@@ -1,7 +1,7 @@
 "use client";
 
-import { Box, Button, TextField } from "@mui/material";
-import { useActionState } from "react";
+import { Box, Button } from "@mui/material";
+import { useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import createLeadAction from "@/app/actions/create-lead-action";
@@ -10,6 +10,8 @@ import { BrandAutocomplete } from "./brand-autocomplete";
 import { Brand, Event } from "@/app/generated/prisma/client";
 import { ScanBusinessCardButton } from "./scan-card-button";
 import { ControlledTextField } from "./controlled-text-field";
+import { ControlledStringAutocomplete } from "./controlled-single-autocomplete";
+import countries from "@/lib/countries";
 
 type LeadFormValues = {
   name: string;
@@ -26,12 +28,7 @@ type LeadFormProps = { events: Event[]; brands: Brand[] };
 export function LeadForm({ events, brands }: LeadFormProps) {
   const [state, action] = useActionState(createLeadAction, null);
 
-  const {
-    register,
-    setValue,
-    control,
-    formState: { errors },
-  } = useForm<LeadFormValues>({
+  const { setValue, control, reset } = useForm<LeadFormValues>({
     defaultValues: {
       name: "",
       email: "",
@@ -42,6 +39,12 @@ export function LeadForm({ events, brands }: LeadFormProps) {
       notes: "",
     },
   });
+
+  useEffect(() => {
+    if (state?.ok) {
+      reset();
+    }
+  }, [state?.ok, reset]);
 
   return (
     <Box
@@ -88,12 +91,12 @@ export function LeadForm({ events, brands }: LeadFormProps) {
         name="companyName"
       />
 
-      <ControlledTextField
-        control={control}
-        label="Country"
-        fullWidth
-        required
+      <ControlledStringAutocomplete
         name="country"
+        label="Country"
+        options={countries}
+        control={control}
+        required
       />
 
       <ControlledTextField
@@ -122,17 +125,17 @@ export function LeadForm({ events, brands }: LeadFormProps) {
         sx={{ gridColumn: "1 / -1" }}
       />
 
-      <Box gridColumn="1 / -1">
-        <Button type="submit" variant="contained" fullWidth>
-          Save Lead
-        </Button>
-      </Box>
-
       {state?.ok && (
         <Box gridColumn="1 / -1" color="success.main" textAlign="center">
           Lead created successfully!
         </Box>
       )}
+
+      <Box gridColumn="1 / -1">
+        <Button type="submit" variant="contained" fullWidth>
+          Save Lead
+        </Button>
+      </Box>
     </Box>
   );
 }

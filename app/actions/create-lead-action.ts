@@ -15,7 +15,16 @@ const createLeadSchema = z.object({
   designation: z.string().optional(),
   phone: z.string().optional(),
   notes: z.string().optional(),
-  brands: z.string().array().optional(),
+  brandIds: z.preprocess((v) => {
+    if (typeof v !== "string") {
+      return [];
+    }
+
+    return v
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+  }, z.string().array()),
 });
 
 export default async function createLeadAction(
@@ -25,7 +34,11 @@ export default async function createLeadAction(
   const rawData = Object.fromEntries(formData.entries());
   const parsed = createLeadSchema.safeParse(rawData);
   if (!parsed.success) {
-    return { ok: false, fieldErrors: z.flattenError(parsed.error).fieldErrors };
+    return {
+      ok: false,
+      fieldErrors: z.flattenError(parsed.error).fieldErrors,
+      formError: "Invalid form data",
+    };
   }
 
   const salesman = await getLoggedInSalesman();
@@ -33,6 +46,8 @@ export default async function createLeadAction(
   if (!salesman) {
     return { ok: false, formError: "Need to be logged in as a salesman" };
   }
+
+  console.log(parsed.data.brandIds);
 
   const lead = await prisma.lead.create({
     data: {
@@ -45,7 +60,7 @@ export default async function createLeadAction(
       phone: parsed.data.phone,
       notes: parsed.data.notes,
       brands: {
-        connect: parsed.data.brands?.map((brandId) => ({ id: brandId })) ?? [],
+        connect: parsed.data.brandIds?.map((id) => ({ id })) ?? [],
       },
       salesmanId: salesman.id,
     },
