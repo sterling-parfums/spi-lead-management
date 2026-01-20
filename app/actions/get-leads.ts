@@ -1,3 +1,5 @@
+"use server";
+
 import prisma from "@/lib/prisma";
 import { Prisma } from "../generated/prisma/client";
 import { getLoggedInSalesmanOrRedirect } from "./get-logged-in-salesman";
@@ -16,22 +18,38 @@ export async function getLeads(): Promise<{ data: LeadWithEvent[] }> {
   const leads = await prisma.lead.findMany({
     where: { salesmanId: salesman.id },
     include: { event: true },
+    orderBy: { createdAt: "desc" },
   });
   return { data: leads };
 }
 
-export async function getLeadsByQuery(query: string) {
+export async function getLeadsByQueryAction(
+  _prev: any,
+  formData: FormData,
+): Promise<{ data: LeadWithEvent[] }> {
   const salesman = await getLoggedInSalesmanOrRedirect();
 
-  return prisma.lead.findMany({
+  const query = formData.get("query");
+  const intent = formData.get("intent");
+
+  if (!query || typeof query !== "string" || intent === "reset") {
+    return getLeads();
+  }
+
+  const leads = await prisma.lead.findMany({
     where: {
       OR: [
         { name: { contains: query, mode: "insensitive" } },
         { email: { contains: query, mode: "insensitive" } },
         { companyName: { contains: query, mode: "insensitive" } },
         { country: { contains: query, mode: "insensitive" } },
+        { event: { name: { contains: query, mode: "insensitive" } } },
       ],
       salesmanId: salesman.id,
     },
+    include: { event: true },
+    orderBy: { createdAt: "desc" },
   });
+
+  return { data: leads };
 }

@@ -150,7 +150,15 @@ export function DataTable<Row extends readonly React.ReactNode[]>({
               onClick={() => onRowClick?.(row, i)}
               sx={{
                 cursor: onRowClick ? "pointer" : "default",
+
+                // zebra striping
                 backgroundColor: i % 2 === 0 ? "action.hover" : "inherit",
+
+                // hover override (must be explicit)
+                "&:hover": {
+                  backgroundColor: "primary.main",
+                  color: "primary.contrastText",
+                },
               }}
             >
               {row.map((cell, j) => (
