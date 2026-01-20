@@ -1,28 +1,61 @@
 "use client";
 
 import { Box, Button, TextField } from "@mui/material";
+import { useActionState } from "react";
+import { useForm } from "react-hook-form";
+
+import createLeadAction from "@/app/actions/create-lead-action";
 import { EventAutocomplete } from "@/components/event-autocomplete";
 import { BrandAutocomplete } from "./brand-autocomplete";
-import createLeadAction from "@/app/actions/create-lead-action";
 import { Brand, Event } from "@/app/generated/prisma/client";
-import { useActionState } from "react";
+import { ScanBusinessCardButton } from "./scan-card-button";
+import { ControlledTextField } from "./controlled-text-field";
+
+type LeadFormValues = {
+  name: string;
+  email: string;
+  phone: string;
+  companyName: string;
+  country: string;
+  designation: string;
+  notes?: string;
+};
 
 type LeadFormProps = { events: Event[]; brands: Brand[] };
 
 export function LeadForm({ events, brands }: LeadFormProps) {
   const [state, action] = useActionState(createLeadAction, null);
 
+  const {
+    register,
+    setValue,
+    control,
+    formState: { errors },
+  } = useForm<LeadFormValues>({
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      companyName: "",
+      country: "",
+      designation: "",
+      notes: "",
+    },
+  });
+
   return (
     <Box
       component="form"
-      display="grid"
       action={action}
-      gridTemplateColumns={{
-        xs: "1fr", // mobile: single column
-        md: "repeat(2, 1fr)", // desktop: two columns
-      }}
+      display="grid"
       gap={2}
+      gridTemplateColumns={{ xs: "1fr", md: "repeat(2, 1fr)" }}
     >
+      {/* Scan button */}
+      <Box gridColumn="1 / -1">
+        <ScanBusinessCardButton setValue={setValue} />
+      </Box>
+
       {state && !state.ok && state.formError && (
         <Box gridColumn="1 / -1" color="error.main">
           {state.formError}
@@ -31,18 +64,56 @@ export function LeadForm({ events, brands }: LeadFormProps) {
 
       <EventAutocomplete events={events} />
 
-      <TextField name="name" label="Name" required fullWidth />
-      <TextField name="email" label="Email" type="email" fullWidth />
+      <ControlledTextField
+        control={control}
+        name="name"
+        label="Name"
+        fullWidth
+        required
+      />
 
-      <TextField name="companyName" label="Company Name" fullWidth required />
-      <TextField name="country" label="Country" fullWidth required />
+      <ControlledTextField
+        label="Email"
+        type="email"
+        fullWidth
+        name="email"
+        control={control}
+      />
 
-      <TextField name="designation" label="Designation" fullWidth />
-      <TextField name="phone" label="Phone" fullWidth />
+      <ControlledTextField
+        control={control}
+        label="Company Name"
+        fullWidth
+        required
+        name="companyName"
+      />
+
+      <ControlledTextField
+        control={control}
+        label="Country"
+        fullWidth
+        required
+        name="country"
+      />
+
+      <ControlledTextField
+        control={control}
+        label="Designation"
+        fullWidth
+        name="designation"
+      />
+
+      <ControlledTextField
+        control={control}
+        label="Phone"
+        fullWidth
+        name="phone"
+      />
 
       <BrandAutocomplete brands={brands} />
 
-      <TextField
+      <ControlledTextField
+        control={control}
         name="notes"
         label="Notes"
         multiline
@@ -51,18 +122,14 @@ export function LeadForm({ events, brands }: LeadFormProps) {
         sx={{ gridColumn: "1 / -1" }}
       />
 
-      <Box gridColumn="1 / -1" display="flex" justifyContent="flex-end">
-        <Button variant="contained" type="submit" fullWidth>
+      <Box gridColumn="1 / -1">
+        <Button type="submit" variant="contained" fullWidth>
           Save Lead
         </Button>
       </Box>
 
       {state?.ok && (
-        <Box
-          gridColumn="1 / -1"
-          color="success.main"
-          sx={{ textAlign: "center" }}
-        >
+        <Box gridColumn="1 / -1" color="success.main" textAlign="center">
           Lead created successfully!
         </Box>
       )}

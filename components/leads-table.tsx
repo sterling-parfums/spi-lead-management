@@ -1,9 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { DataTable } from "./data-table";
-import { LeadWithEventAndBrands } from "@/app/actions/get-leads";
+import { LeadWithEvent } from "@/app/actions/get-leads";
 
-type LeadsTableProps = { data: LeadWithEventAndBrands[] };
+type LeadsTableProps = { data: LeadWithEvent[] };
 
 export default function LeadsTable({ data }: LeadsTableProps) {
   const headers = ["Name", "Country", "Company", "Event"];
