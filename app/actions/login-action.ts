@@ -6,13 +6,14 @@ import { FormState } from "./form-state";
 import prisma from "@/lib/prisma";
 import { compare } from "bcrypt";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const loginSchema = z.object({
   email: z.email(),
   password: z.string(),
 });
 
-export async function login(
+export async function formLoginAction(
   _prevState: FormState<UserSession> | null,
   formData: FormData,
 ): Promise<FormState<UserSession>> {
@@ -52,5 +53,5 @@ export async function login(
     expires: sessionExpiry,
   });
 
-  return { ok: true, data: session };
+  redirect("/");
 }

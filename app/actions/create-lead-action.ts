@@ -9,18 +9,19 @@ import { getLoggedInSalesman } from "./get-logged-in-salesman";
 const createLeadSchema = z.object({
   eventId: z.string().min(1, "Event ID is required"),
   name: z.string().min(2, "Lead name must be at least 2 characters long"),
-  country: z.string().min(2, "Country must be at least 2 characters long"),
-  companyName: z
-    .string()
-    .min(2, "Company name must be at least 2 characters long"),
-  email: z.string().email("Invalid email address"),
+  country: z.string(),
+  companyName: z.string().optional(),
+  email: z.string().optional(),
   designation: z.string().optional(),
   phone: z.string().optional(),
   notes: z.string().optional(),
   brands: z.string().array().optional(),
 });
 
-export async function createLead(formData: FormData): Promise<FormState<Lead>> {
+export default async function createLeadAction(
+  _prev: FormState<Lead> | null,
+  formData: FormData,
+): Promise<FormState<Lead>> {
   const rawData = Object.fromEntries(formData.entries());
   const parsed = createLeadSchema.safeParse(rawData);
   if (!parsed.success) {

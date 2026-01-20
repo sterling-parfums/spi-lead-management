@@ -29,7 +29,7 @@ export type ContextMenuItem<Row> = {
 type DataTableProps<Row extends readonly React.ReactNode[]> = {
   headers: string[];
   rows: Row[];
-  onRowClick?: (row: Row) => void;
+  onRowClick?: (row: Row, index: number) => void;
   contextMenuItems?: ContextMenuItem<Row>[];
 };
 
@@ -83,20 +83,22 @@ export function DataTable<Row extends readonly React.ReactNode[]>({
         {rows.map((row, i) => (
           <Card
             key={i}
-            onClick={() => onRowClick?.(row)}
+            onClick={() => onRowClick?.(row, i)}
             sx={{ cursor: onRowClick ? "pointer" : "default" }}
           >
             <CardContent>
               <Box display="flex" justifyContent="space-between">
                 <Box>
-                  {row.map((cell, idx) => (
-                    <Box key={idx} mb={1}>
-                      <Typography variant="caption" color="text.secondary">
-                        {headers[idx]}
-                      </Typography>
-                      <Typography>{cell}</Typography>
-                    </Box>
-                  ))}
+                  {row
+                    .filter((c) => c)
+                    .map((cell, idx) => (
+                      <Box key={idx} mb={1}>
+                        <Typography variant="caption" color="text.secondary">
+                          {headers[idx]}
+                        </Typography>
+                        <Typography>{cell}</Typography>
+                      </Box>
+                    ))}
                 </Box>
 
                 {contextMenuItems.length > 0 && (
@@ -145,7 +147,7 @@ export function DataTable<Row extends readonly React.ReactNode[]>({
             <TableRow
               key={i}
               hover={!!onRowClick}
-              onClick={() => onRowClick?.(row)}
+              onClick={() => onRowClick?.(row, i)}
               sx={{
                 cursor: onRowClick ? "pointer" : "default",
                 backgroundColor: i % 2 === 0 ? "action.hover" : "inherit",

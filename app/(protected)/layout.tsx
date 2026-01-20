@@ -1,6 +1,6 @@
 import { SidebarLayout } from "@/components/sidebar-layout";
 import { ReactNode } from "react";
-import { getLoggedInUser } from "@/app/_actions/get-logged-in-user";
+import { getLoggedInUser } from "@/app/actions/get-logged-in-user";
 import { redirect } from "next/navigation";
 
 export default async function RootLayout({

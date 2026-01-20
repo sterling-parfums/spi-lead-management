@@ -1,13 +1,25 @@
 "use client";
-import { Prisma } from "@/app/generated/prisma/client";
+import { useRouter } from "next/navigation";
 import { DataTable } from "./data-table";
+import { LeadWithEventAndBrands } from "@/app/actions/get-leads";
 
-type LeadWithEvent = Prisma.LeadGetPayload<{ include: { event: true } }>;
-
-type LeadsTableProps = { data: LeadWithEvent[] };
+type LeadsTableProps = { data: LeadWithEventAndBrands[] };
 
 export default function LeadsTable({ data }: LeadsTableProps) {
-  const headers = ["Name", "Email", "Event"];
-  const rows = data.map((l) => [l.name, l.email, l.event.name]);
-  return <DataTable headers={headers} rows={rows} />;
+  const headers = ["Name", "Country", "Company", "Event"];
+  const rows = data.map((l) => [
+    l.name,
+    l.country,
+    l.companyName,
+    l.event.name,
+  ]);
+
+  const router = useRouter();
+  return (
+    <DataTable
+      headers={headers}
+      rows={rows}
+      onRowClick={(_, i) => router.push(`/leads/${data[i].id}`)}
+    />
+  );
 }

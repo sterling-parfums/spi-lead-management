@@ -1,11 +1,11 @@
 "use client";
 
-import { login } from "@/app/_actions/login";
+import { formLoginAction } from "@/app/actions/login-action";
 import { Button, TextField } from "@mui/material";
 import { useActionState } from "react";
 
 export default function LoginPage() {
-  const [state, action] = useActionState(login, null);
+  const [state, action] = useActionState(formLoginAction, null);
   return (
     <form
       action={action}
