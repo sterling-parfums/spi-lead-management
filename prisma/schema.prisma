@@ -93,6 +93,8 @@ model Lead {
   designation String?
   phone       String?
   notes       String?
+  address     String?
+  website     String?
   brands      Brand[]
 
   event    Event    @relation(fields: [eventId], references: [id])

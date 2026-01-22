@@ -4,7 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { Alert, Button, CircularProgress } from "@mui/material";
 import { UseFormSetValue } from "react-hook-form";
 import { processImage } from "@/lib/exif";
-import { extractLeadFromImages } from "@/app/actions/extract-card-fields";
+import { analyzeBusinessCard } from "@/app/actions/analyze-business-card";
 
 type ExtractResponse = {
   ok: boolean;
@@ -26,6 +26,8 @@ type LeadFormValues = {
   companyName: string;
   country: string;
   designation: string;
+  address: string;
+  website: string;
   notes?: string;
 };
 
@@ -62,19 +64,25 @@ export function ScanBusinessCardButton({ setValue }: Props) {
           );
         }
 
-        const result = await extractLeadFromImages(formData);
+        const result = await analyzeBusinessCard(formData);
 
-        if (!result.ok) {
-          throw new Error(result.error);
+        if (!result) {
+          setError("Extraction failed");
+          return;
         }
 
-        Object.entries(result.data).forEach(([key, value]) => {
-          if (value) {
-            setValue(key as keyof LeadFormValues, value, {
-              shouldDirty: true,
-            });
-          }
-        });
+        setValue("name", result.name || "");
+        setValue("email", result.emails || "");
+        setValue(
+          "phone",
+          [result.workPhones, result.mobilePhones, result.otherPhones].join(
+            " | ",
+          ) || "",
+        );
+        setValue("companyName", result.companyNames || "");
+        setValue("address", result.addresses || "");
+        setValue("designation", result.jobTitles || "");
+        setValue("website", result.websites || "");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Extraction failed");
       }
