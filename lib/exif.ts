@@ -34,8 +34,8 @@ function loadImage(file: File): Promise<HTMLImageElement> {
 
 function getOrientation(file: File): Promise<number> {
   return new Promise((resolve) => {
-    EXIF.getData(file as any, function () {
-      resolve(EXIF.getTag(this, "Orientation") || 1);
+    EXIF.getData(file as any, () => {
+      resolve(EXIF.getTag(file as any, "Orientation") || 1);
     });
   });
 }
