@@ -19,7 +19,9 @@ type LeadFormValues = {
   phone: string;
   companyName: string;
   country: string;
+  address: string;
   designation: string;
+  website: string;
   notes?: string;
 };
 
@@ -37,6 +39,8 @@ export function LeadForm({ events, brands }: LeadFormProps) {
       country: "",
       designation: "",
       notes: "",
+      address: "",
+      website: "",
     },
   });
 
@@ -100,6 +104,16 @@ export function LeadForm({ events, brands }: LeadFormProps) {
       />
 
       <ControlledTextField
+        name="address"
+        label="Address"
+        control={control}
+        multiline
+        rows={3}
+        fullWidth
+        sx={{ gridColumn: "1 / -1" }}
+      />
+
+      <ControlledTextField
         control={control}
         label="Designation"
         fullWidth
@@ -112,6 +126,8 @@ export function LeadForm({ events, brands }: LeadFormProps) {
         fullWidth
         name="phone"
       />
+
+      <ControlledTextField name="website" label="Website" control={control} />
 
       <BrandAutocomplete brands={brands} />
 

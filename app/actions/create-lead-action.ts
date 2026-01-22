@@ -25,6 +25,8 @@ const createLeadSchema = z.object({
       .map((s) => s.trim())
       .filter((s) => s.length > 0);
   }, z.string().array()),
+  website: z.string().optional(),
+  address: z.string().optional(),
 });
 
 export default async function createLeadAction(
@@ -47,8 +49,6 @@ export default async function createLeadAction(
     return { ok: false, formError: "Need to be logged in as a salesman" };
   }
 
-  console.log(parsed.data.brandIds);
-
   const lead = await prisma.lead.create({
     data: {
       eventId: parsed.data.eventId,
@@ -63,6 +63,8 @@ export default async function createLeadAction(
         connect: parsed.data.brandIds?.map((id) => ({ id })) ?? [],
       },
       salesmanId: salesman.id,
+      website: parsed.data.website,
+      address: parsed.data.address,
     },
   });
 
