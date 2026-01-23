@@ -3,7 +3,7 @@ import LeadsTable from "@/components/leads-table";
 import { LinkBehavior } from "@/components/link-behaviour";
 import { Button } from "@mui/material";
 
-export default async function () {
+export default async function LeadsPage() {
   const { data } = await getLeads();
 
   return (

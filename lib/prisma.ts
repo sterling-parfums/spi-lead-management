@@ -24,6 +24,7 @@ const softDeleteExtension = Prisma.defineExtension({
   },
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function withNotDeleted(where: any) {
   if (!where) return { deletedAt: null };
 

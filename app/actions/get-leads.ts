@@ -24,7 +24,7 @@ export async function getLeads(): Promise<{ data: LeadWithEvent[] }> {
 }
 
 export async function getLeadsByQueryAction(
-  _prev: any,
+  _prev: unknown,
   formData: FormData,
 ): Promise<{ data: LeadWithEvent[] }> {
   const salesman = await getLoggedInSalesmanOrRedirect();
