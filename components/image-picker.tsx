@@ -41,7 +41,7 @@ export default function ImagePicker({
 
   return (
     <Stack spacing={2}>
-      <Button variant="contained" component="label">
+      <Button variant="outlined" component="label" fullWidth>
         {label}
         <input
           name={name}

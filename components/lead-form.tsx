@@ -1,7 +1,7 @@
 "use client";
 
-import { Box, Button } from "@mui/material";
-import { useActionState, useEffect, useRef } from "react";
+import { Box } from "@mui/material";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import createLeadAction from "@/app/actions/create-lead-action";
@@ -32,6 +32,7 @@ type LeadFormProps = { events: Event[]; brands: Brand[] };
 
 export function LeadForm({ events, brands }: LeadFormProps) {
   const [state, formAction] = useActionState(createLeadAction, null);
+  const [key, setKey] = useState(0);
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -58,7 +59,9 @@ export function LeadForm({ events, brands }: LeadFormProps) {
     const cardImages = original.getAll("cardImages") as File[];
     const supportingImages = original.getAll("supportingImages") as File[];
 
-    const files = [...cardImages, ...supportingImages].filter(Boolean);
+    const files = [...cardImages, ...supportingImages].filter(
+      (f) => f && f.size,
+    );
 
     const formData = new FormData();
 
@@ -70,12 +73,12 @@ export function LeadForm({ events, brands }: LeadFormProps) {
 
     // scale images
     for (const file of files) {
-      console.log("Processing image:", file);
       const scaled = await scaleImage(file, 800);
       formData.append("images", scaled, file.name);
     }
 
     formAction(formData);
+    setKey((k) => k + 1);
   };
 
   useEffect(() => {
@@ -92,11 +95,9 @@ export function LeadForm({ events, brands }: LeadFormProps) {
       display="grid"
       gap={2}
       gridTemplateColumns={{ xs: "1fr", md: "repeat(2, 1fr)" }}
+      key={key}
     >
       {/* Scan button */}
-      <Box gridColumn="1 / -1">
-        <BusinessCardPicker setValue={setValue} />
-      </Box>
 
       {state && !state.ok && state.formError && (
         <Box gridColumn="1 / -1" color="error.main">
@@ -105,6 +106,10 @@ export function LeadForm({ events, brands }: LeadFormProps) {
       )}
 
       <EventAutocomplete events={events} />
+
+      <Box gridColumn="1 / -1">
+        <BusinessCardPicker setValue={setValue} />
+      </Box>
 
       <ControlledTextField
         control={control}
@@ -166,7 +171,9 @@ export function LeadForm({ events, brands }: LeadFormProps) {
 
       <BrandAutocomplete brands={brands} />
 
-      <ImagePicker name="supportingImages" label="Select Supporting Images" />
+      <Box gridColumn="1 / -1">
+        <ImagePicker name="supportingImages" label="Upload Supporting Images" />
+      </Box>
 
       <ControlledTextField
         control={control}
