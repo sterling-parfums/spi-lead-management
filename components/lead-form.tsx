@@ -130,7 +130,6 @@ export function LeadForm({ events, brands }: LeadFormProps) {
 
       <ControlledTextField
         label="Email"
-        type="email"
         fullWidth
         name="email"
         control={control}
