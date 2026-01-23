@@ -1,14 +1,11 @@
 "use client";
 
-import { Button } from "@mui/material";
-import { useFormStatus } from "react-dom";
+import { Button, ButtonProps } from "@mui/material";
 
-export function SubmitButton() {
-  const { pending } = useFormStatus();
-
+export function SubmitButton(props: ButtonProps) {
   return (
-    <Button type="submit" variant="contained" fullWidth loading={pending}>
-      {pending ? "Submitting..." : "Submit"}
+    <Button {...props} type="submit" variant="contained" fullWidth>
+      Submit
     </Button>
   );
 }
