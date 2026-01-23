@@ -1,67 +1,60 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
-import { Alert, Button, CircularProgress } from "@mui/material";
+import { useRef, useState, useTransition, useEffect } from "react";
+import { Alert, Button, CircularProgress, Stack } from "@mui/material";
 import { UseFormSetValue } from "react-hook-form";
-import { processImage } from "@/lib/exif";
+
 import { analyzeBusinessCard } from "@/app/actions/analyze-business-card";
-
-type ExtractResponse = {
-  ok: boolean;
-  data?: Partial<{
-    name: string;
-    email: string;
-    phone: string;
-    companyName: string;
-    country: string;
-    designation: string;
-  }>;
-  error?: string;
-};
-
-type LeadFormValues = {
-  name: string;
-  email: string;
-  phone: string;
-  companyName: string;
-  country: string;
-  designation: string;
-  address: string;
-  website: string;
-  notes?: string;
-};
+import { scaleImage } from "@/lib/image";
+import { LeadFormValues } from "./lead-form";
+import { ImageGallery } from "./image-gallery";
 
 type Props = {
   setValue: UseFormSetValue<LeadFormValues>;
 };
 
-export function ScanBusinessCardButton({ setValue }: Props) {
+type PreviewImage = {
+  url: string;
+  filename: string;
+};
+
+export function BusinessCardPicker({ setValue }: Props) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isExtracting, startExtract] = useTransition();
+  const [images, setImages] = useState<PreviewImage[]>([]);
+
+  // clean up blob URLs
+  useEffect(() => {
+    return () => {
+      images.forEach((img) => URL.revokeObjectURL(img.url));
+    };
+  }, [images]);
 
   const pickImages = () => {
     setError(null);
     fileInputRef.current?.click();
   };
 
-  const onFilesSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onFilesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
-    e.target.value = "";
-
     if (!files.length) return;
+
+    // create preview thumbnails immediately
+    const previews = files.map((file) => ({
+      url: URL.createObjectURL(file),
+      filename: file.name,
+    }));
+
+    setImages(previews);
 
     startExtract(async () => {
       try {
         const formData = new FormData();
 
         for (const file of files) {
-          const processed = await processImage(file, 600);
-          formData.append(
-            "images",
-            processed,
-            file.name.replace(/\.\w+$/, ".jpg"),
-          );
+          const processed = await scaleImage(file);
+          formData.append("images", processed, file.name);
         }
 
         const result = await analyzeBusinessCard(formData);
@@ -75,14 +68,15 @@ export function ScanBusinessCardButton({ setValue }: Props) {
         setValue("email", result.emails || "");
         setValue(
           "phone",
-          [result.workPhones, result.mobilePhones, result.otherPhones].join(
-            " | ",
-          ) || "",
+          [result.workPhones, result.mobilePhones, result.otherPhones]
+            .filter(Boolean)
+            .join(" | ") || "",
         );
         setValue("companyName", result.companyNames || "");
         setValue("address", result.addresses || "");
         setValue("designation", result.jobTitles || "");
         setValue("website", result.websites || "");
+        setValue("country", result.countries || "");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Extraction failed");
       }
@@ -90,15 +84,15 @@ export function ScanBusinessCardButton({ setValue }: Props) {
   };
 
   return (
-    <>
+    <Stack spacing={1}>
       <input
         ref={fileInputRef}
         type="file"
         hidden
         multiple
         accept="image/*"
-        capture="environment"
         onChange={onFilesSelected}
+        name="cardImages"
       />
 
       <Button variant="outlined" onClick={pickImages} disabled={isExtracting}>
@@ -112,11 +106,9 @@ export function ScanBusinessCardButton({ setValue }: Props) {
         )}
       </Button>
 
-      {error && (
-        <Alert severity="error" sx={{ mt: 1 }}>
-          {error}
-        </Alert>
-      )}
-    </>
+      {images.length > 0 && <ImageGallery images={images} thumbSize={80} />}
+
+      {error && <Alert severity="error">{error}</Alert>}
+    </Stack>
   );
 }

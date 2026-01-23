@@ -1,6 +1,41 @@
-import { PrismaClient } from "../app/generated/prisma/client";
+import { Prisma, PrismaClient } from "../app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { softDeleteExtension } from "./prisma-soft-delete";
+
+const softDeleteExtension = Prisma.defineExtension({
+  name: "softDelete",
+
+  query: {
+    $allModels: {
+      async findMany({ args, query }) {
+        args.where = withNotDeleted(args.where);
+        return query(args);
+      },
+
+      async findFirst({ args, query }) {
+        args.where = withNotDeleted(args.where);
+        return query(args);
+      },
+
+      async count({ args, query }) {
+        args.where = withNotDeleted(args.where);
+        return query(args);
+      },
+    },
+  },
+});
+
+function withNotDeleted(where: any) {
+  if (!where) return { deletedAt: null };
+
+  // Opt-out escape hatch
+  if (where.deletedAt !== undefined) {
+    return where;
+  }
+
+  return {
+    AND: [where, { deletedAt: null }],
+  };
+}
 
 const globalForPrisma = global as unknown as {
   prisma: PrismaClient;

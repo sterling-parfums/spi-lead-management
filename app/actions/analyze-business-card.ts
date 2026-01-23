@@ -1,21 +1,16 @@
 // app/actions/analyzeBusinessCard.ts
 "use server";
 
+import { imagesToPdf } from "@/lib/images-to-pdf";
 import {
   DocumentAnalysisClient,
   AzureKeyCredential,
-  AnalyzeResult,
-  AnalyzedDocument,
   DocumentField,
 } from "@azure/ai-form-recognizer";
 
 export async function analyzeBusinessCard(formData: FormData) {
   const files = formData.getAll("images") as File[];
-  const [file] = files;
-
-  if (!(file instanceof File)) {
-    throw new Error("Missing image file");
-  }
+  const pdfBuffer = await imagesToPdf(files);
 
   const endpoint = process.env.AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT;
   const key = process.env.AZURE_DOCUMENT_INTELLIGENCE_KEY;
@@ -29,8 +24,7 @@ export async function analyzeBusinessCard(formData: FormData) {
     new AzureKeyCredential(key),
   );
 
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+  const buffer = Buffer.from(pdfBuffer);
 
   const poller = await client.beginAnalyzeDocument(
     "prebuilt-businessCard",
@@ -46,8 +40,6 @@ export async function analyzeBusinessCard(formData: FormData) {
     return null;
   }
 
-  console.log("Analyzed document fields:", Object.values(fields));
-
   const extracted = {
     name: getFieldValue(fields.ContactNames),
     mobilePhones: getFieldValue(fields.MobilePhones),
@@ -56,6 +48,7 @@ export async function analyzeBusinessCard(formData: FormData) {
     jobTitles: getFieldValue(fields.JobTitles),
     companyNames: getFieldValue(fields.CompanyNames),
     addresses: getFieldValue(fields.Addresses),
+    countries: getCountryValue(fields.Addresses),
     emails: getFieldValue(fields.Emails),
     websites: getFieldValue(fields.Websites),
     departments: getFieldValue(fields.Departments),
@@ -64,23 +57,20 @@ export async function analyzeBusinessCard(formData: FormData) {
   return extracted;
 }
 
-function getFieldValue(field?: DocumentField, confidence = 0.9): string | null {
+function getFieldValue(field?: DocumentField): string | null {
   if (!field) {
     return null;
   }
 
   if (field.kind === "array") {
-    return field.values.map((item) => getFieldValue(item)).join(" | ");
+    return field.values
+      .map((item) => getFieldValue(item))
+      .filter((v) => v?.trim())
+      .join(" | ");
   }
 
   if (field.kind === "object") {
     return field.content ?? null;
-  }
-
-  if (!field.confidence || field.confidence < confidence) {
-    console.log(`Field confidence too low: ${field.confidence}`);
-    console.log("Field content:", field);
-    return null;
   }
 
   if (field.kind === "string") {
@@ -93,6 +83,24 @@ function getFieldValue(field?: DocumentField, confidence = 0.9): string | null {
 
   if (field.kind === "address") {
     return field.content ?? null;
+  }
+
+  return null;
+}
+
+function getCountryValue(field?: DocumentField): string | null {
+  console.log("getCountryValue field:", field);
+
+  if (!field) {
+    return null;
+  }
+
+  if (field.kind === "array") {
+    return field.values.map((item) => getCountryValue(item)).join(" | ");
+  }
+
+  if (field.kind === "address") {
+    return field.value?.countryRegion ?? null;
   }
 
   return null;

@@ -4,8 +4,8 @@ import prisma from "@/lib/prisma";
 import { Prisma } from "../generated/prisma/client";
 import { getLoggedInSalesmanOrRedirect } from "./get-logged-in-salesman";
 
-export type LeadWithEventAndBrands = Prisma.LeadGetPayload<{
-  include: { event: true; brands: true };
+export type LeadWithEventAndBrandsAndImages = Prisma.LeadGetPayload<{
+  include: { event: true; brands: true; images: true };
 }>;
 
 export type LeadWithEvent = Prisma.LeadGetPayload<{

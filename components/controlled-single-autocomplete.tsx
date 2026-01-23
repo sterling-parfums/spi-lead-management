@@ -31,6 +31,7 @@ export function ControlledStringAutocomplete<T extends FieldValues>({
             value={field.value ?? null}
             onChange={(_, value) => field.onChange(value ?? "")}
             isOptionEqualToValue={(a, b) => a === b}
+            autoHighlight
             renderInput={(params) => (
               <TextField
                 {...params}
