@@ -21,6 +21,7 @@ export function EventAutocomplete({ events }: EventAutocompleteProps) {
         )}
         value={value}
         onChange={(_, v) => setValue(v)}
+        autoHighlight
       />
       <input type="hidden" name={"eventId"} value={value?.id ?? ""} />
     </Box>
