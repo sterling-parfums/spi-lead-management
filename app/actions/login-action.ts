@@ -25,7 +25,7 @@ export async function formLoginAction(
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: parsed.data.email },
+    where: { email: parsed.data.email.toLowerCase() },
   });
 
   if (!user) {
