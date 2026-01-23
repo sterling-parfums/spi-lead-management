@@ -80,11 +80,11 @@ export default function LeadDetail({
             <Grid container spacing={2}>
               <Info
                 label="Created"
-                value={new Date(lead.createdAt).toLocaleString()}
+                value={new Date(lead.createdAt).toLocaleString("en-GB")}
               />
               <Info
                 label="Updated"
-                value={new Date(lead.updatedAt).toLocaleString()}
+                value={new Date(lead.updatedAt).toLocaleString("en-GB")}
               />
             </Grid>
           </Stack>
