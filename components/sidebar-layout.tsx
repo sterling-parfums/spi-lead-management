@@ -33,7 +33,7 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { label: "Home", href: "/", icon: <HomeIcon /> },
-    { label: "Leads", href: "/leads", icon: <PeopleIcon /> },
+    { label: "My Leads", href: "/leads", icon: <PeopleIcon /> },
   ];
 
   const drawer = (
