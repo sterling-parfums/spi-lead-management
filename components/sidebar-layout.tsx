@@ -22,10 +22,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { logout } from "@/app/actions/logout";
+import { User } from "@/app/generated/prisma/client";
 
 const drawerWidth = 200;
 
-export function SidebarLayout({ children }: { children: React.ReactNode }) {
+type SidebarLayoutProps = { children: React.ReactNode; user?: User };
+export function SidebarLayout({ children, user }: SidebarLayoutProps) {
   const pathname = usePathname();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -75,7 +77,7 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
             </IconButton>
           )}
           <Typography variant="h6" noWrap>
-            SPI Leads Management
+            SPI Leads Management ({user?.fullName})
           </Typography>
         </Toolbar>
       </AppBar>
