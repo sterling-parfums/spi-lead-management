@@ -83,6 +83,10 @@ export function BusinessCardPicker({ setValue }: Props) {
     });
   };
 
+  const isIOS =
+    typeof navigator !== "undefined" &&
+    /iPad|iPhone|iPod/.test(navigator.userAgent);
+
   return (
     <Stack spacing={1}>
       <input
@@ -92,6 +96,7 @@ export function BusinessCardPicker({ setValue }: Props) {
         multiple
         accept="image/*"
         onChange={onFilesSelected}
+        capture={isIOS ? undefined : "environment"}
         name="cardImages"
       />
 
