@@ -17,10 +17,11 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleIcon from "@mui/icons-material/People";
-import EventIcon from "@mui/icons-material/Event";
+import LogoutIcon from "@mui/icons-material/Logout";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { logout } from "@/app/actions/logout";
 
 const drawerWidth = 200;
 
@@ -33,7 +34,6 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { label: "Home", href: "/", icon: <HomeIcon /> },
     { label: "Leads", href: "/leads", icon: <PeopleIcon /> },
-    { label: "Events", href: "/events", icon: <EventIcon /> },
   ];
 
   const drawer = (
@@ -50,6 +50,13 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
           <ListItemText primary={label} />
         </ListItemButton>
       ))}
+
+      <ListItemButton onClick={async () => logout()}>
+        <ListItemIcon>
+          <LogoutIcon />
+        </ListItemIcon>
+        <ListItemText primary={"Logout"} />
+      </ListItemButton>
     </List>
   );
 

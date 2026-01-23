@@ -11,7 +11,7 @@ export async function getLoggedInUser(): Promise<User | null> {
   if (!sessionId) return null;
 
   const session = await prisma.userSession.findUnique({
-    where: { id: sessionId },
+    where: { id: sessionId, deletedAt: null },
     include: { user: true },
   });
 
