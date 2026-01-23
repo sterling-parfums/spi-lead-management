@@ -5,6 +5,8 @@ import { Lead } from "../generated/prisma/client";
 import { FormState } from "./form-state";
 import prisma from "@/lib/prisma";
 import { getLoggedInSalesman } from "./get-logged-in-salesman";
+import { uploadImagesToS3 } from "@/lib/s3";
+import { ImageCreateManyArgs } from "../generated/prisma/models";
 
 const createLeadSchema = z.object({
   eventId: z.string().min(1, "Event ID is required"),
@@ -67,6 +69,22 @@ export default async function createLeadAction(
       address: parsed.data.address,
     },
   });
+
+  const imageFiles = formData.getAll("images") as File[];
+
+  const env = process.env.NODE_ENV || "dev";
+  const uploaded = await uploadImagesToS3(
+    imageFiles.filter(Boolean),
+    `${env}/${lead.id}`,
+  );
+
+  await prisma.image.createMany({
+    data: uploaded.map(({ url, file }) => ({
+      url,
+      filename: file.name,
+      leadId: lead.id,
+    })),
+  } as ImageCreateManyArgs);
 
   return { ok: true, data: lead };
 }

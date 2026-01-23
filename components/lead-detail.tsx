@@ -1,6 +1,6 @@
 "use client";
 
-import { LeadWithEventAndBrands } from "@/app/actions/get-leads";
+import { LeadWithEventAndBrandsAndImages } from "@/app/actions/get-leads";
 import {
   Box,
   Card,
@@ -12,8 +12,13 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { ImageGallery } from "./image-gallery";
 
-export default function LeadDetail({ lead }: { lead: LeadWithEventAndBrands }) {
+export default function LeadDetail({
+  lead,
+}: {
+  lead: LeadWithEventAndBrandsAndImages;
+}) {
   return (
     <Box maxWidth={900} mx="auto">
       <Card>
@@ -69,6 +74,8 @@ export default function LeadDetail({ lead }: { lead: LeadWithEventAndBrands }) {
 
             <Divider />
 
+            <ImageGallery images={lead.images} />
+
             {/* Metadata */}
             <Grid container spacing={2}>
               <Info
@@ -102,8 +109,11 @@ function Info({
         {label}
       </Typography>
       <Box>
-        {type === "email" && <Link href={`mailto:${value}`}>{value}</Link>}
-        {type !== "email" && <Typography>{value || "—"}</Typography>}
+        {value && type === "email" ? (
+          <Link href={`mailto:${value}`}>{value}</Link>
+        ) : (
+          <Typography>{value || "—"}</Typography>
+        )}
       </Box>
     </Grid>
   );

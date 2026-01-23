@@ -22,7 +22,6 @@ export function BrandAutocomplete({ brands }: BrandAutocompleteProps) {
         inputValue={inputValue}
         onChange={(_, v) => setValue(v)}
         onInputChange={(_, v, reason) => {
-          console.log(reason);
           if (reason !== "selectOption" && reason !== "reset") {
             setInputValue(v);
           }
