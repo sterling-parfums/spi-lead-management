@@ -31,6 +31,16 @@ export function ControlledStringAutocomplete<T extends FieldValues>({
             value={field.value ?? null}
             onChange={(_, value) => field.onChange(value ?? "")}
             isOptionEqualToValue={(a, b) => a === b}
+            filterOptions={(opts, state) =>
+              opts.filter((option) => {
+                const optionLetters = option.toLowerCase().replaceAll(" ", "");
+                const inputLetters = state.inputValue
+                  .toLowerCase()
+                  .replaceAll(" ", "");
+
+                return optionLetters.includes(inputLetters);
+              })
+            }
             autoHighlight
             renderInput={(params) => (
               <TextField
