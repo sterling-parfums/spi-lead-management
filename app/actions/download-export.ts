@@ -51,9 +51,6 @@ export async function downloadExport(
   const endDate = new Date(parsed.data.endDate || parsed.data.startDate);
   endDate.setHours(23, 59, 59, 999);
 
-  console.log("Start Date:", startDate);
-  console.log("End Date:", endDate);
-
   const leads = await prisma.lead.findMany({
     where: {
       createdAt: { gte: startDate, lte: endDate },
@@ -107,9 +104,7 @@ export async function downloadExport(
   return new Response(csvBytes, {
     headers: {
       "Content-Type": "text/csv",
-      "Content-Disposition": `attachment; filename="leads_export_${
-        startDate.toISOString().split("T")[0]
-      }_to_${endDate.toISOString().split("T")[0]}.csv"`,
+      "Content-Disposition": `attachment; filename="leads_export_${parsed.data.startDate}_to_${parsed.data.endDate || parsed.data.startDate}.csv"`,
     },
   });
 }
