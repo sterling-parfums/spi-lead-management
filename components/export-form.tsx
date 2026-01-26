@@ -17,7 +17,7 @@ export function ExportForm({ events }: ExportFormProps) {
     >
       <TextField
         name="startDate"
-        label="Satrt Date"
+        label="Start Date"
         type="date"
         slotProps={{ inputLabel: { shrink: true } }}
         required
