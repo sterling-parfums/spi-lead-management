@@ -6,7 +6,9 @@ import { User } from "../generated/prisma/client";
 import { redirect } from "next/navigation";
 import { Prisma } from "../generated/prisma/browser";
 
-type UserWithSalesman = Prisma.UserGetPayload<{ include: { salesman: true } }>;
+export type UserWithSalesman = Prisma.UserGetPayload<{
+  include: { salesman: true };
+}>;
 
 type GetLoggedInUserOpts = { includeSalesman: true };
 export async function getLoggedInUser(): Promise<User | null>;

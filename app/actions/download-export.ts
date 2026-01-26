@@ -5,10 +5,13 @@ import { getLoggedInUserOrRedirect } from "./get-logged-in-user";
 import { FormState } from "./form-state";
 import prisma from "@/lib/prisma";
 
-const downloadExportSchema = z.object({
-  startDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: "Invalid start date",
-  }),
+const exportInputSchema = z.object({
+  startDate: z
+    .string()
+    .refine((date) => !date || !isNaN(Date.parse(date)), {
+      message: "Invalid start date",
+    })
+    .optional(),
   endDate: z
     .string()
     .refine((date) => !date || !isNaN(Date.parse(date)), {
@@ -16,6 +19,7 @@ const downloadExportSchema = z.object({
     })
     .optional(),
   eventId: z.string(),
+  userId: z.string().optional(),
 });
 
 export async function downloadExport(
@@ -28,7 +32,7 @@ export async function downloadExport(
   }
 
   const rawData = Object.fromEntries(formData.entries());
-  const parsed = downloadExportSchema.safeParse(rawData);
+  const parsed = exportInputSchema.safeParse(rawData);
 
   if (!parsed.success) {
     return {
@@ -42,25 +46,33 @@ export async function downloadExport(
     return { ok: false, formError: "User is not a salesman" };
   }
 
+  const data = parsed.data;
+
   const role = user.role;
   const departmentId = user.salesman.departmentId;
+  const userId = data.userId ?? user.id;
 
-  const startDate = new Date(parsed.data.startDate);
-  startDate.setHours(0, 0, 0, 0);
+  const startDate = data.startDate ? new Date(data.startDate) : undefined;
+  startDate?.setHours(0, 0, 0, 0);
 
-  const endDate = new Date(parsed.data.endDate || parsed.data.startDate);
-  endDate.setHours(23, 59, 59, 999);
+  const endDate = data.endDate ? new Date(data.endDate) : undefined;
+  endDate?.setHours(23, 59, 59, 999);
 
   const leads = await prisma.lead.findMany({
     where: {
       createdAt: { gte: startDate, lte: endDate },
-      salesman: role === "ADMIN" ? undefined : { departmentId },
-      eventId: parsed.data.eventId,
+      salesman: role === "ADMIN" ? { userId } : { departmentId },
+      eventId: data.eventId,
     },
     include: {
       brands: true,
       salesman: { include: { user: { select: { fullName: true } } } },
     },
+  });
+
+  const { name: eventName } = await prisma.event.findUniqueOrThrow({
+    where: { id: data.eventId },
+    select: { name: true },
   });
 
   const csvHeaders = [
@@ -101,10 +113,19 @@ export async function downloadExport(
         .join("\n"),
   );
 
+  let exportFilename = `${Date.now()}-leads-${eventName}`;
+  if (data.startDate) {
+    exportFilename += `-${data.startDate}`;
+  }
+  if (data.endDate) {
+    exportFilename += `-${data.endDate}`;
+  }
+  exportFilename += ".csv";
+
   return new Response(csvBytes, {
     headers: {
       "Content-Type": "text/csv",
-      "Content-Disposition": `attachment; filename="leads_export_${parsed.data.startDate}_to_${parsed.data.endDate || parsed.data.startDate}.csv"`,
+      "Content-Disposition": `attachment; filename="${exportFilename}"`,
     },
   });
 }

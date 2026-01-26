@@ -1,11 +1,12 @@
 import { getEvents } from "@/app/actions/get-events";
 import { getLoggedInUserOrRedirect } from "@/app/actions/get-logged-in-user";
+import { getExportableUsers } from "@/app/actions/get-users";
 import { UserRole } from "@/app/generated/prisma/enums";
 import { ExportForm } from "@/components/export-form";
 import { redirect } from "next/navigation";
 
 export default async function ExportPage() {
-  const user = await getLoggedInUserOrRedirect();
+  const user = await getLoggedInUserOrRedirect({ includeSalesman: true });
   const allowedRoles: UserRole[] = [UserRole.ADMIN, UserRole.MANAGER];
 
   if (!allowedRoles.includes(user.role)) {
@@ -14,5 +15,7 @@ export default async function ExportPage() {
 
   const { data: events } = await getEvents();
 
-  return <ExportForm events={events} />;
+  const { data: users } = await getExportableUsers(user);
+
+  return <ExportForm events={events} role={user.role} users={users} />;
 }
