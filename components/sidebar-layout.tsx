@@ -3,6 +3,7 @@
 import { Box, Toolbar, useTheme, useMediaQuery } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleIcon from "@mui/icons-material/People";
+import IosShareIcon from "@mui/icons-material/IosShare";
 import { useState } from "react";
 import { User } from "@/app/generated/prisma/client";
 import { DrawerItem } from "./drawer-content";
@@ -22,7 +23,7 @@ export function SidebarLayout({ children, user }: SidebarLayoutProps) {
     {
       label: "Exports",
       href: "/exports",
-      icon: <PeopleIcon />,
+      icon: <IosShareIcon />,
       roles: ["ADMIN", "MANAGER"],
     },
   ];

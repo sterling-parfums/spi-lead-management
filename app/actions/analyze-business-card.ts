@@ -89,8 +89,6 @@ function getFieldValue(field?: DocumentField): string | null {
 }
 
 function getCountryValue(field?: DocumentField): string | null {
-  console.log("getCountryValue field:", field);
-
   if (!field) {
     return null;
   }

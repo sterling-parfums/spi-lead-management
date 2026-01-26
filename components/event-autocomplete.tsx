@@ -6,9 +6,13 @@ import { useState } from "react";
 
 type EventAutocompleteProps = {
   events: Event[];
+  required?: boolean;
 };
 
-export function EventAutocomplete({ events }: EventAutocompleteProps) {
+export function EventAutocomplete({
+  events,
+  required,
+}: EventAutocompleteProps) {
   const options = events.map((event) => ({ label: event.name, id: event.id }));
   const [value, setValue] = useState<(typeof options)[0] | null>(null);
 
@@ -17,7 +21,7 @@ export function EventAutocomplete({ events }: EventAutocompleteProps) {
       <Autocomplete
         options={options}
         renderInput={(params) => (
-          <TextField {...params} label={"Event"} required />
+          <TextField {...params} label={"Event"} required={required ?? true} />
         )}
         value={value}
         onChange={(_, v) => setValue(v)}
