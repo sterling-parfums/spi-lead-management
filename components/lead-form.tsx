@@ -112,7 +112,7 @@ export function LeadForm({ events, brands }: LeadFormProps) {
         </Box>
       )}
 
-      <EventAutocomplete events={events} />
+      <EventAutocomplete events={events} required />
       <ErrorMessage state={state} name="eventId" />
 
       <Box gridColumn="1 / -1">

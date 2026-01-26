@@ -21,7 +21,7 @@ export function EventAutocomplete({
       <Autocomplete
         options={options}
         renderInput={(params) => (
-          <TextField {...params} label={"Event"} required={required ?? true} />
+          <TextField {...params} label={"Event"} required={required} />
         )}
         value={value}
         onChange={(_, v) => setValue(v)}

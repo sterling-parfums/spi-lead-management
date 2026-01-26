@@ -20,6 +20,7 @@ export function ExportForm({ events }: ExportFormProps) {
         label="Satrt Date"
         type="date"
         slotProps={{ inputLabel: { shrink: true } }}
+        required
       />
 
       <TextField
@@ -29,7 +30,7 @@ export function ExportForm({ events }: ExportFormProps) {
         slotProps={{ inputLabel: { shrink: true } }}
       />
 
-      <EventAutocomplete events={events} required={false} />
+      <EventAutocomplete events={events} required />
 
       <Button type="submit" variant="contained">
         Submit
