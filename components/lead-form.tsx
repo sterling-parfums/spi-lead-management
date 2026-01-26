@@ -15,7 +15,7 @@ import countries from "@/lib/countries";
 import ImagePicker from "./image-picker";
 import { SubmitButton } from "./submit-button";
 import { scaleImage } from "@/lib/image";
-import { FormState } from "@/app/actions/form-state";
+import { ErrorMessage } from "./error-message";
 
 export type LeadFormValues = {
   name: string;
@@ -112,7 +112,7 @@ export function LeadForm({ events, brands }: LeadFormProps) {
         </Box>
       )}
 
-      <EventAutocomplete events={events} />
+      <EventAutocomplete events={events} required />
       <ErrorMessage state={state} name="eventId" />
 
       <Box gridColumn="1 / -1">
@@ -224,21 +224,5 @@ export function LeadForm({ events, brands }: LeadFormProps) {
         <SubmitButton loading={submitting} />
       </Box>
     </Box>
-  );
-}
-
-type ErrorMessageProps = {
-  state: FormState | null;
-  name: string;
-};
-function ErrorMessage({ state, name }: ErrorMessageProps) {
-  if (!state || state.ok || !state?.fieldErrors) {
-    return null;
-  }
-
-  return (
-    state.fieldErrors[name] && (
-      <Box color="error.main">{state.fieldErrors[name]}</Box>
-    )
   );
 }

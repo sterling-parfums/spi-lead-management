@@ -1,119 +1,52 @@
 "use client";
 
-import {
-  Box,
-  Drawer,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Toolbar,
-  AppBar,
-  Typography,
-  IconButton,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+import { Box, Toolbar, useTheme, useMediaQuery } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleIcon from "@mui/icons-material/People";
-import LogoutIcon from "@mui/icons-material/Logout";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import IosShareIcon from "@mui/icons-material/IosShare";
 import { useState } from "react";
-import { logout } from "@/app/actions/logout";
 import { User } from "@/app/generated/prisma/client";
-
-const drawerWidth = 200;
+import { DrawerItem } from "./drawer-content";
+import { AppBar } from "./app-bar";
+import { Drawer } from "./drawer";
 
 type SidebarLayoutProps = { children: React.ReactNode; user?: User };
 export function SidebarLayout({ children, user }: SidebarLayoutProps) {
-  const pathname = usePathname();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const navItems = [
+  const handleDrawerClose = () => setSidebarOpen(false);
+  const handleDrawerToggle = () => setSidebarOpen((v) => !v);
+
+  const navItems: DrawerItem[] = [
     { label: "Home", href: "/", icon: <HomeIcon /> },
     { label: "My Leads", href: "/leads", icon: <PeopleIcon /> },
+    {
+      label: "Exports",
+      href: "/exports",
+      icon: <IosShareIcon />,
+      roles: ["ADMIN", "MANAGER"],
+    },
   ];
 
-  const drawer = (
-    <List>
-      {navItems.map(({ label, href, icon }) => (
-        <ListItemButton
-          key={href}
-          component={Link}
-          href={href}
-          selected={pathname === href}
-          onClick={() => setMobileOpen(false)}
-        >
-          <ListItemIcon>{icon}</ListItemIcon>
-          <ListItemText primary={label} />
-        </ListItemButton>
-      ))}
-
-      <ListItemButton onClick={async () => logout()}>
-        <ListItemIcon>
-          <LogoutIcon />
-        </ListItemIcon>
-        <ListItemText primary={"Logout"} />
-      </ListItemButton>
-    </List>
-  );
+  if (!user) {
+    return null;
+  }
 
   return (
     <Box sx={{ display: "flex" }}>
-      <AppBar position="fixed" sx={{ zIndex: (t) => t.zIndex.drawer + 1 }}>
-        <Toolbar>
-          {isMobile && (
-            <IconButton
-              color="inherit"
-              edge="start"
-              onClick={() => setMobileOpen(true)}
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
-          )}
-          <Typography variant="h6" noWrap>
-            SPI Leads Management ({user?.fullName})
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <AppBar
+        title={`SPI Leads Management (${user.fullName})`}
+        onDrawerToggle={handleDrawerToggle}
+      />
 
-      {/* Mobile drawer */}
-      {isMobile && (
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={() => setMobileOpen(false)}
-          ModalProps={{ keepMounted: true }}
-          sx={{
-            [`& .MuiDrawer-paper`]: { width: drawerWidth },
-          }}
-        >
-          <Toolbar />
-          {drawer}
-        </Drawer>
-      )}
-
-      {/* Desktop drawer */}
-      {!isMobile && (
-        <Drawer
-          variant="permanent"
-          sx={{
-            width: drawerWidth,
-            [`& .MuiDrawer-paper`]: {
-              width: drawerWidth,
-              boxSizing: "border-box",
-            },
-          }}
-        >
-          <Toolbar />
-          {drawer}
-        </Drawer>
-      )}
+      <Drawer
+        items={navItems}
+        user={user}
+        drawerWidth={240}
+        open={sidebarOpen}
+        onItemClick={handleDrawerClose}
+        onClose={handleDrawerClose}
+      />
 
       <Box
         component="main"

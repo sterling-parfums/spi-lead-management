@@ -19,12 +19,19 @@ model User {
   updatedAt DateTime  @default(now()) @updatedAt
   deletedAt DateTime?
 
-  email          String @unique
+  email          String   @unique
   hashedPassword String
   fullName       String
+  role           UserRole @default(SALESMAN)
 
   salesman     Salesman?
   userSessions UserSession[]
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  SALESMAN
 }
 
 model UserSession {
