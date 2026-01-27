@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Toolbar, useTheme, useMediaQuery } from "@mui/material";
+import { Box, Toolbar } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleIcon from "@mui/icons-material/People";
 import IosShareIcon from "@mui/icons-material/IosShare";
@@ -9,6 +9,7 @@ import { User } from "@/app/generated/prisma/client";
 import { DrawerItem } from "./drawer-content";
 import { AppBar } from "./app-bar";
 import { Drawer } from "./drawer";
+import SummarizeIcon from "@mui/icons-material/Summarize";
 
 type SidebarLayoutProps = { children: React.ReactNode; user?: User };
 export function SidebarLayout({ children, user }: SidebarLayoutProps) {
@@ -25,6 +26,12 @@ export function SidebarLayout({ children, user }: SidebarLayoutProps) {
       href: "/exports",
       icon: <IosShareIcon />,
       roles: ["ADMIN", "MANAGER"],
+    },
+    {
+      label: "Summary",
+      href: "/summary",
+      icon: <SummarizeIcon />,
+      roles: ["ADMIN"],
     },
   ];
 

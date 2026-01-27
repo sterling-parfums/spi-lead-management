@@ -155,7 +155,7 @@ export function DataTable<Row extends readonly React.ReactNode[]>({
                 backgroundColor: i % 2 === 0 ? "action.hover" : "inherit",
 
                 // hover override (must be explicit)
-                "&:hover": {
+                "&:hover td": {
                   backgroundColor: "primary.main",
                   color: "primary.contrastText",
                 },
