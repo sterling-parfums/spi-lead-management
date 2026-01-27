@@ -24,8 +24,8 @@ export async function formLoginAction(
     return { ok: false, fieldErrors: z.flattenError(parsed.error).fieldErrors };
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: parsed.data.email.toLowerCase() },
+  const user = await prisma.user.findFirst({
+    where: { email: { mode: "insensitive", equals: parsed.data.email } },
   });
 
   if (!user) {
