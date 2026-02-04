@@ -2,8 +2,15 @@
 
 import z from "zod";
 import prisma from "@/lib/prisma";
+import { Prisma } from "../generated/prisma/client";
 import { FormState } from "./form-state";
-import { LeadWithEvent } from "./get-leads";
+
+export type SummaryLead = Prisma.LeadGetPayload<{
+  include: {
+    event: true;
+    salesman: { include: { user: true; department: true } };
+  };
+}>;
 
 const summaryInputSchema = z.object({
   eventId: z.string(),
@@ -42,7 +49,10 @@ export async function getSummary(_prev: unknown, formData: FormData) {
       },
       createdAt: { gte: startDate, lte: endDate },
     },
-    include: { event: true, salesman: { include: { user: true } } },
+    include: {
+      event: true,
+      salesman: { include: { user: true, department: true } },
+    },
   });
 
   return { ok: true, data: leads };
