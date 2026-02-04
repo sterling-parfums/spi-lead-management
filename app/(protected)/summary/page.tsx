@@ -23,7 +23,7 @@ export default async function SummaryPage() {
     <>
       <Box mb={4}>
         <Typography variant="h4" gutterBottom>
-          Leads Sumamry
+          Leads Summary
         </Typography>
 
         <Typography variant="body1" color="text.secondary">
