@@ -96,6 +96,7 @@ export function SummaryForm({ events, users, departments }: SummaryFormProps) {
                   key={event.name}
                   disableGutters
                   elevation={0}
+                  defaultExpanded={event.departments.length === 1}
                   sx={{
                     "&:before": { display: "none" },
                     "& .MuiAccordionSummary-root": { minHeight: 32 },
@@ -103,7 +104,10 @@ export function SummaryForm({ events, users, departments }: SummaryFormProps) {
                     "& .MuiAccordionDetails-root": { pt: 0.25 },
                   }}
                 >
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{ flexDirection: "row-reverse", gap: 1 }}
+                  >
                     <Typography variant="subtitle1" fontWeight={600}>
                       {event.name} ({event.total})
                     </Typography>
@@ -123,6 +127,7 @@ export function SummaryForm({ events, users, departments }: SummaryFormProps) {
                           key={department.name}
                           disableGutters
                           elevation={0}
+                          defaultExpanded={department.users.length === 1}
                           sx={{
                             "&:before": { display: "none" },
                             "& .MuiAccordionSummary-root": { minHeight: 30 },
@@ -130,7 +135,10 @@ export function SummaryForm({ events, users, departments }: SummaryFormProps) {
                             "& .MuiAccordionDetails-root": { pt: 0.25 },
                           }}
                         >
-                          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                          <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            sx={{ flexDirection: "row-reverse", gap: 1 }}
+                          >
                             <Typography variant="body1" fontWeight={500}>
                               {department.name} ({department.total})
                             </Typography>
@@ -150,6 +158,7 @@ export function SummaryForm({ events, users, departments }: SummaryFormProps) {
                                   key={user.name}
                                   disableGutters
                                   elevation={0}
+                                  defaultExpanded={user.dates.length === 1}
                                   sx={{
                                     "&:before": { display: "none" },
                                     "& .MuiAccordionSummary-root": {
@@ -161,6 +170,7 @@ export function SummaryForm({ events, users, departments }: SummaryFormProps) {
                                 >
                                   <AccordionSummary
                                     expandIcon={<ExpandMoreIcon />}
+                                    sx={{ flexDirection: "row-reverse", gap: 1 }}
                                   >
                                     <Typography variant="body2" fontWeight={500}>
                                       {user.name} ({user.total})
