@@ -50,7 +50,7 @@ export function SummaryForm({ events, users, departments }: SummaryFormProps) {
           display: "grid",
           gap: 3,
           alignItems: "start",
-          gridTemplateColumns: { xs: "1fr", lg: "1fr 1.5fr" },
+          gridTemplateColumns: { xs: "1fr", md: "1fr 1.5fr" },
         }}
       >
         <Box
