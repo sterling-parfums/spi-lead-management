@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SPI Lead Collection
 
-## Getting Started
+Lead capture and management app for events. The app supports admin summaries, lead export, business card extraction (Azure Document Intelligence + OpenAI), and image uploads to S3. Built with Next.js App Router, Prisma, and PostgreSQL.
 
-First, run the development server:
+**Getting Started**
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Create a `.env` file in the project root with the required variables:
+
+```bash
+DATABASE_URL="postgresql://user:password@host:5432/dbname"
+AWS_REGION="us-east-1"
+AWS_ACCESS_KEY_ID="..."
+AWS_SECRET_ACCESS_KEY="..."
+AWS_S3_BUCKET="your-s3-bucket"
+AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT="https://<your-resource>.cognitiveservices.azure.com/"
+AZURE_DOCUMENT_INTELLIGENCE_KEY="..."
+OPENAI_API_KEY="..."
+```
+
+3. Run Prisma migrations (or push schema to your dev database):
+
+```bash
+npx prisma migrate dev
+# or
+npx prisma db push
+```
+
+4. Start the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Required Environment Variables**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`DATABASE_URL`: PostgreSQL connection string used by Prisma.
 
-## Learn More
+`AWS_REGION`: AWS region for S3 uploads.
 
-To learn more about Next.js, take a look at the following resources:
+`AWS_ACCESS_KEY_ID`: AWS access key for S3.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`AWS_SECRET_ACCESS_KEY`: AWS secret key for S3.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+`AWS_S3_BUCKET`: S3 bucket name used for uploads.
 
-## Deploy on Vercel
+`AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT`: Azure Document Intelligence endpoint.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`AZURE_DOCUMENT_INTELLIGENCE_KEY`: Azure Document Intelligence API key.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`OPENAI_API_KEY`: OpenAI API key used for business card extraction.
